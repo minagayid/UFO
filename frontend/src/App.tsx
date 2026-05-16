@@ -1,59 +1,15 @@
-import { useState, useEffect, useCallback } from 'react'
-import { motion, AnimatePresence } from 'framer-motion'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area, ComposedChart, Bar } from 'recharts'
-import { 
-  TrendingUp, DollarSign, AlertTriangle, BarChart3, Settings, LayoutDashboard, 
-  Sparkles, Brain, Zap, Globe, Shield, ArrowUpRight, ArrowDownRight, 
-  RefreshCw, Download, Share2, Maximize2, Minimize2, ChevronRight, Play,
-  Cpu, Database, Activity, Target, Lightbulb, MessageSquare
-} from 'lucide-react'
+import { useState } from 'react'
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, AreaChart, Area } from 'recharts'
+import { TrendingUp, DollarSign, AlertTriangle, BarChart3, Settings, LayoutDashboard } from 'lucide-react'
 import { clsx } from 'clsx'
 import { twMerge } from 'tailwind-merge'
-import toast, { Toaster } from 'react-hot-toast'
 
 function cn(...inputs: string[]) {
   return twMerge(clsx(inputs))
 }
 
-// Types
-interface FinancialDataPoint {
-  month: string
-  actual?: number | null
-  forecast?: number | null
-  low50?: number
-  high50?: number
-  low80?: number
-  high80?: number
-  amount?: number
-  category?: string
-}
-
-interface KPIMetric {
-  title: string
-  value: string
-  change?: string
-  trend?: 'up' | 'down' | 'neutral'
-  confidence?: number
-  aiInsight?: string
-}
-
-interface WidgetConfig {
-  id: string
-  type: 'kpi' | 'chart' | 'insight' | 'scenario' | 'data-quality'
-  title: string
-  data?: any
-  config?: any
-}
-
-interface LLMSuggestion {
-  type: 'forecast' | 'alert' | 'recommendation' | 'insight'
-  message: string
-  confidence: number
-  action?: string
-}
-
-// Enhanced sample data with more metrics
-const revenueData: FinancialDataPoint[] = [
+// Sample financial data with uncertainty bands
+const revenueData = [
   { month: 'Jan', actual: 120000, forecast: 118000, low50: 110000, high50: 126000, low80: 100000, high80: 136000 },
   { month: 'Feb', actual: 132000, forecast: 130000, low50: 122000, high50: 138000, low80: 112000, high80: 148000 },
   { month: 'Mar', actual: 145000, forecast: 142000, low50: 134000, high50: 150000, low80: 124000, high80: 160000 },
@@ -62,7 +18,7 @@ const revenueData: FinancialDataPoint[] = [
   { month: 'Jun', actual: null, forecast: 182000, low50: 168000, high50: 196000, low80: 154000, high80: 210000 },
 ]
 
-const expenseData: FinancialDataPoint[] = [
+const expenseData = [
   { month: 'Jan', amount: 85000, category: 'Operations' },
   { month: 'Feb', amount: 92000, category: 'Operations' },
   { month: 'Mar', amount: 88000, category: 'Operations' },
@@ -71,93 +27,35 @@ const expenseData: FinancialDataPoint[] = [
   { month: 'Jun', amount: 102000, category: 'Operations' },
 ]
 
-const cashFlowData = [
-  { month: 'Jan', operating: 35000, investing: -15000, financing: 10000, net: 30000 },
-  { month: 'Feb', operating: 40000, investing: -20000, financing: 5000, net: 25000 },
-  { month: 'Mar', operating: 57000, investing: -10000, financing: -5000, net: 42000 },
-  { month: 'Apr', operating: 60000, investing: -25000, financing: 0, net: 35000 },
-  { month: 'May', operating: 70000, investing: -15000, financing: 10000, net: 65000 },
-  { month: 'Jun', operating: 80000, investing: -30000, financing: -10000, net: 40000 },
-]
-
-// Mock AI/LLM suggestions
-const mockAISuggestions: LLMSuggestion[] = [
-  {
-    type: 'forecast',
-    message: 'Revenue trajectory suggests 18% QoQ growth. Consider scaling infrastructure to meet demand.',
-    confidence: 0.87,
-    action: 'View Details'
-  },
-  {
-    type: 'alert',
-    message: 'Expense ratio trending above industry benchmark. Review operational efficiency.',
-    confidence: 0.92,
-    action: 'Analyze Expenses'
-  },
-  {
-    type: 'recommendation',
-    message: 'Cash runway optimal. Strategic investment opportunity identified in Q3.',
-    confidence: 0.79,
-    action: 'Explore Options'
-  }
-]
-
 interface KPICardProps {
   title: string
   value: string
   change?: string
   icon: React.ReactNode
   trend?: 'up' | 'down' | 'neutral'
-  confidence?: number
-  aiInsight?: string
 }
 
-function KPICard({ title, value, change, icon, trend = 'neutral', confidence, aiInsight }: KPICardProps) {
+function KPICard({ title, value, change, icon, trend = 'neutral' }: KPICardProps) {
   return (
-    <motion.div 
-      className={cn(
-        "glass-panel rounded-xl p-6 cursor-pointer transition-all duration-300",
-        "hover:border-cyan-400/50 hover:shadow-lg hover:shadow-cyan-500/20"
-      )}
-      whileHover={{ scale: 1.02 }}
-      whileTap={{ scale: 0.98 }}
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-    >
-      <div className="flex items-start justify-between">
-        <div className="flex-1">
-          <p className="text-sm text-gray-400 uppercase tracking-wider">{title}</p>
-          <p className="text-3xl font-bold mt-2 gradient-text">{value}</p>
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700">
+      <div className="flex items-center justify-between">
+        <div>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{title}</p>
+          <p className="text-2xl font-bold mt-1">{value}</p>
           {change && (
-            <div className="flex items-center gap-2 mt-2">
-              <span className={cn(
-                "flex items-center text-sm font-medium px-2 py-1 rounded-full",
-                trend === 'up' ? 'bg-green-500/20 text-green-400' : 
-                trend === 'down' ? 'bg-red-500/20 text-red-400' : 'bg-gray-500/20 text-gray-400'
-              )}>
-                {trend === 'up' ? <ArrowUpRight className="w-3 h-3 mr-1" /> : 
-                 trend === 'down' ? <ArrowDownRight className="w-3 h-3 mr-1" /> : null}
-                {change}
-              </span>
-              {confidence && (
-                <span className="text-xs text-gray-500 ml-2">
-                  {(confidence * 100).toFixed(0)}% confidence
-                </span>
-              )}
-            </div>
-          )}
-          {aiInsight && (
-            <div className="mt-3 flex items-start gap-2 p-2 bg-purple-500/10 rounded-lg border border-purple-500/20">
-              <Brain className="w-4 h-4 text-purple-400 mt-0.5 flex-shrink-0" />
-              <p className="text-xs text-purple-300">{aiInsight}</p>
-            </div>
+            <p className={cn(
+              "text-sm mt-1",
+              trend === 'up' ? 'text-green-600' : trend === 'down' ? 'text-red-600' : 'text-gray-500'
+            )}>
+              {change}
+            </p>
           )}
         </div>
-        <div className="p-3 rounded-xl bg-gradient-to-br from-cyan-500/20 to-purple-500/20 border border-cyan-500/30">
+        <div className="p-3 bg-blue-100 dark:bg-blue-900 rounded-full">
           {icon}
         </div>
       </div>
-    </motion.div>
+    </div>
   )
 }
 
@@ -169,105 +67,32 @@ interface DataQualityScoreProps {
 
 function DataQualityScore({ dataPoints, completeness, confidence }: DataQualityScoreProps) {
   return (
-    <motion.div 
-      className="glass-panel rounded-xl p-5"
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-    >
-      <h3 className="text-sm font-semibold mb-4 flex items-center gap-2 text-cyan-400">
-        <Database className="w-4 h-4" />
-        <span className="gradient-text">Data Quality Score</span>
+    <div className="bg-white dark:bg-gray-800 rounded-lg shadow-md p-4 border border-gray-200 dark:border-gray-700">
+      <h3 className="text-sm font-semibold mb-3 flex items-center gap-2">
+        <AlertTriangle className="w-4 h-4" />
+        Data Quality Score
       </h3>
-      <div className="space-y-3">
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-400">Data Points:</span>
-          <span className="font-bold text-white">{dataPoints}</span>
+      <div className="space-y-2">
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-500">Data Points:</span>
+          <span className="font-medium">{dataPoints}</span>
         </div>
-        <div>
-          <div className="flex justify-between text-sm mb-1">
-            <span className="text-gray-400">Completeness:</span>
-            <span className="font-medium text-cyan-400">{completeness}%</span>
-          </div>
-          <div className="w-full bg-gray-700/50 rounded-full h-2 overflow-hidden">
-            <motion.div 
-              className="h-full bg-gradient-to-r from-cyan-500 to-purple-500"
-              initial={{ width: 0 }}
-              animate={{ width: `${completeness}%` }}
-              transition={{ duration: 1, delay: 0.2 }}
-            />
-          </div>
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-500">Completeness:</span>
+          <span className="font-medium">{completeness}%</span>
         </div>
-        <div className="flex justify-between items-center">
-          <span className="text-sm text-gray-400">Confidence:</span>
+        <div className="flex justify-between text-sm">
+          <span className="text-gray-500">Confidence:</span>
           <span className={cn(
-            "px-3 py-1 rounded-full text-sm font-medium",
-            confidence === 'High' ? 'bg-green-500/20 text-green-400 border border-green-500/30' : 
-            confidence === 'Medium' ? 'bg-yellow-500/20 text-yellow-400 border border-yellow-500/30' : 
-            'bg-red-500/20 text-red-400 border border-red-500/30'
+            "font-medium px-2 py-0.5 rounded",
+            confidence === 'High' ? 'bg-green-100 text-green-800' : 
+            confidence === 'Medium' ? 'bg-yellow-100 text-yellow-800' : 'bg-red-100 text-red-800'
           )}>
             {confidence}
           </span>
         </div>
       </div>
-    </motion.div>
-  )
-}
-
-interface AISuggestionCardProps {
-  suggestion: LLMSuggestion
-  onAction?: () => void
-}
-
-function AISuggestionCard({ suggestion, onAction }: AISuggestionCardProps) {
-  const getIcon = () => {
-    switch (suggestion.type) {
-      case 'forecast': return <TrendingUp className="w-5 h-5" />
-      case 'alert': return <AlertTriangle className="w-5 h-5" />
-      case 'recommendation': return <Lightbulb className="w-5 h-5" />
-      default: return <Sparkles className="w-5 h-5" />
-    }
-  }
-
-  const getColor = () => {
-    switch (suggestion.type) {
-      case 'forecast': return 'from-cyan-500 to-blue-500'
-      case 'alert': return 'from-orange-500 to-red-500'
-      case 'recommendation': return 'from-purple-500 to-pink-500'
-      default: return 'from-green-500 to-emerald-500'
-    }
-  }
-
-  return (
-    <motion.div 
-      className="glass-panel rounded-xl p-5 border-l-4 border-l-cyan-500"
-      whileHover={{ x: 5 }}
-      initial={{ opacity: 0, x: -20 }}
-      animate={{ opacity: 1, x: 0 }}
-    >
-      <div className="flex items-start gap-3">
-        <div className={cn("p-2 rounded-lg bg-gradient-to-br", getColor())}>
-          {getIcon()}
-        </div>
-        <div className="flex-1">
-          <div className="flex items-center gap-2 mb-2">
-            <Brain className="w-4 h-4 text-purple-400" />
-            <span className="text-xs font-medium text-purple-400 uppercase tracking-wider">AI Insight</span>
-            <span className="text-xs text-gray-500 ml-auto">
-              {(suggestion.confidence * 100).toFixed(0)}% confidence
-            </span>
-          </div>
-          <p className="text-sm text-gray-300 mb-3">{suggestion.message}</p>
-          {suggestion.action && (
-            <button 
-              onClick={onAction}
-              className="text-xs font-medium text-cyan-400 hover:text-cyan-300 flex items-center gap-1 transition-colors"
-            >
-              {suggestion.action} <ChevronRight className="w-3 h-3" />
-            </button>
-          )}
-        </div>
-      </div>
-    </motion.div>
+    </div>
   )
 }
 
