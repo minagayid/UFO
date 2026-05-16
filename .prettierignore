@@ -1,0 +1,26 @@
+# Dependencies
+node_modules/
+
+# Production
+dist/
+build/
+
+# Generated files
+*.min.js
+*.min.css
+
+# Lock files
+package-lock.json
+yarn.lock
+pnpm-lock.yaml
+
+# Environment
+.env*
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
