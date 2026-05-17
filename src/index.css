@@ -1,0 +1,134 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ─── Design System Tokens ─── */
+:root {
+  font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  color-scheme: dark light;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+}
+
+#root {
+  width: 100%;
+  min-height: 100vh;
+}
+
+/* ─── Premium Scrollbar ─── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.15);
+  border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.3);
+}
+.dark ::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.08);
+}
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* ─── Custom Range Slider (cross-browser) ─── */
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  height: 6px;
+  border-radius: 999px;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #6366f1;
+  cursor: pointer;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2), 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all 0.15s ease;
+}
+input[type="range"]::-webkit-slider-thumb:hover {
+  transform: scale(1.15);
+  box-shadow: 0 0 0 5px rgba(99, 102, 241, 0.25), 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+input[type="range"]::-webkit-slider-thumb:active {
+  transform: scale(1.05);
+}
+
+input[type="range"]::-moz-range-thumb {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #6366f1;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2), 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* Accent color overrides for different sliders */
+.accent-emerald-500::-webkit-slider-thumb {
+  background: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2), 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+.accent-rose-500::-webkit-slider-thumb {
+  background: #f43f5e;
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2), 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+.accent-emerald-500::-moz-range-thumb {
+  background: #10b981;
+  box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2), 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+.accent-rose-500::-moz-range-thumb {
+  background: #f43f5e;
+  box-shadow: 0 0 0 3px rgba(244, 63, 94, 0.2), 0 2px 6px rgba(0, 0, 0, 0.2);
+}
+
+/* ─── Focus Ring Utility ─── */
+*:focus-visible {
+  outline: 2px solid rgba(99, 102, 241, 0.6);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* ─── Selection Color ─── */
+::selection {
+  background: rgba(99, 102, 241, 0.3);
+  color: inherit;
+}
+
+/* ─── Stagger Animation Helpers ─── */
+.stagger-1 { animation-delay: 0.05s; }
+.stagger-2 { animation-delay: 0.1s; }
+.stagger-3 { animation-delay: 0.15s; }
+.stagger-4 { animation-delay: 0.2s; }
+
+/* ─── Recharts Dark Mode Overrides ─── */
+.dark .recharts-cartesian-grid line {
+  stroke: rgba(148, 163, 184, 0.08);
+}
+.dark .recharts-text {
+  fill: #94a3b8;
+}
+.dark .recharts-legend-item-text {
+  color: #94a3b8 !important;
+}
