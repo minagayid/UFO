@@ -18,6 +18,6 @@ export default defineConfig({
           'vendor-icons': ['lucide-react'],
         },
       },
-    },
-  },
+    }
+  }
 })

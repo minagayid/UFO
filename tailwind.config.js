@@ -1,4 +1,3 @@
-/** @type {import('tailwindcss').Config} */
 export default {
   darkMode: 'class',
   content: [
@@ -49,7 +48,7 @@ export default {
       backdropBlur: {
         xs: '2px',
       },
-    },
+    }
   },
   plugins: [],
 }

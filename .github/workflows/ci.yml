@@ -12,7 +12,6 @@ permissions:
   checks: write
 
 jobs:
-  # Security: Check for vulnerable dependencies
   security:
     name: Security Checks
     runs-on: ubuntu-latest
@@ -21,7 +20,6 @@ jobs:
 
       - name: Run npm audit
         run: |
-          cd frontend
           npm ci
           npm audit --audit-level=moderate || npm audit fix --force
         continue-on-error: true
@@ -33,9 +31,8 @@ jobs:
           base: ${{ github.event.repository.default_branch }}
           head: HEAD
 
-  # Build: Verify the frontend builds successfully
   build:
-    name: Build Frontend
+    name: Build Application
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -48,31 +45,24 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-          cache-dependency-path: frontend/package.json
+          cache-dependency-path: package.json
 
       - name: Install dependencies
-        run: |
-          cd frontend
-          npm ci
+        run: npm ci
 
       - name: Run TypeScript check
-        run: |
-          cd frontend
-          npx tsc --noEmit
+        run: npx tsc --noEmit
 
       - name: Build
-        run: |
-          cd frontend
-          npm run build
+        run: npm run build
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: dist-${{ matrix.node-version }}
-          path: frontend/dist
+          path: dist
           retention-days: 5
 
-  # Code Quality: Lint and format checks
   lint:
     name: Code Quality
     runs-on: ubuntu-latest
@@ -84,27 +74,22 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          cache-dependency-path: frontend/package.json
+          cache-dependency-path: package.json
 
       - name: Install dependencies
-        run: |
-          cd frontend
-          npm ci
+        run: npm ci
 
       - name: Check for console logs
         run: |
-          cd frontend
           if grep -r "console\." src/ --include="*.tsx" --include="*.ts" | grep -v "// console\." | grep -v "console\.error"; then
             echo "Warning: console statements found in source code"
           fi
 
       - name: Check for TODO/FIXME comments
         run: |
-          cd frontend
           echo "=== TODOs in source code ==="
           grep -r "TODO\|FIXME" src/ --include="*.tsx" --include="*.ts" || echo "None found"
 
-  # Dependencies: Check for outdated packages
   dependencies:
     name: Dependency Check
     runs-on: ubuntu-latest
@@ -116,15 +101,13 @@ jobs:
         with:
           node-version: '20.x'
           cache: 'npm'
-          cache-dependency-path: frontend/package.json
+          cache-dependency-path: package.json
 
       - name: Check outdated dependencies
         run: |
-          cd frontend
           npm ci
           npm outdated || true
 
-  # Production readiness check
   readiness:
     name: Production Readiness
     runs-on: ubuntu-latest
@@ -139,7 +122,6 @@ jobs:
             echo "❌ README.md is missing or empty"
             exit 1
           fi
-          
           if ! grep -q "Installation\|Setup\|Usage" README.md; then
             echo "⚠️ README.md lacks key sections"
           fi
