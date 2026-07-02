@@ -34,3 +34,10 @@ Thumbs.db
 *.swp
 *.swo
 *~
+
+# IDE artifacts (TypeScript language server - should never be committed)
+tsserver
+tsserver.CMD
+tsserver.ps1
+launch.json
+
