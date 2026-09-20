@@ -1,55 +1,51 @@
 # UFO — Ultimate Financial Operations
 
-**Futuristic CEO at your reach.**
+UFO is a React + TypeScript dashboard prototype for reviewing revenue,
+expenses, forecasts, uncertainty bands, and what-if scenarios in one local
+workspace.
 
-UFO is a TypeScript + React financial operations dashboard that gives business owners CEO-level oversight of their finances — revenue, expenses, cash flow, and forecasts — in a single sleek interface.
+## Current capabilities
 
-## Features
+- Revenue forecasting with 50% and 80% uncertainty bands.
+- Expense projections with adjustable reduction assumptions.
+- KPI cards for projected revenue, expenses, margin, and cash runway.
+- Functional growth, expense-reduction, and volatility sliders.
+- A customizable canvas view with local layout persistence and JSON sharing.
+- Optional browser-side Gemini copilot configuration; no key is committed.
 
-- **Financial Dashboard** — Real-time revenue, expense, and cash flow overview
-- - **Forecasting** — AI-assisted financial projections
-  - - **Operations Center** — Track KPIs, budgets, and departmental spending
-    - - **Reports** — Export-ready financial statements
-      - - **MIT Licensed** — Free to use and extend
-       
-        - ## Tech Stack
-       
-        - | Layer | Technology |
-        - |-------|-----------|
-        - | Frontend | React 18, TypeScript, Vite |
-        - | Styling | Tailwind CSS |
-        - | Charts | Recharts / D3 |
-        - | CI | GitHub Actions |
-       
-        - ## Quick Start
-       
-        - ```bash
-          # Install dependencies
-          npm install
+The app uses synthetic data. It is a decision-support prototype, not an
+accounting system or a source of verified financial advice.
 
-          # Start development server
-          npm run dev
+## Quick start
 
-          # Build for production
-          npm run build
-          ```
+```bash
+npm install
+npm run dev
+```
 
-          Open http://localhost:3000 in your browser.
+Open the local URL printed by Vite. For a production bundle:
 
-          ## Project Structure
+```bash
+npm run build
+```
 
-          ```
-          UFO/
-          ├── src/
-          │   ├── components/   # UI components
-          │   ├── data/         # Mock / API data
-          │   ├── types/        # TypeScript types
-          │   └── utils/        # Helper functions
-          ├── dist/             # Production build output
-          └── .github/
-              └── workflows/    # CI pipeline
-          ```
+## Project structure
 
-          ## License
+```text
+src/
+  components/   Dashboard, canvas, KPI, copilot, and scenario UI
+  data/         Synthetic revenue and expense inputs
+  types/        Financial TypeScript models
+  utils/        Forecast, expense, KPI, and class-name helpers
+```
 
-          MIT — see [LICENSE](LICENSE) for details.
+## Known boundaries
+
+- Data is currently local and synthetic; there is no backend or persistence
+  beyond browser storage for the canvas layout.
+- There are no component tests or live financial-data integrations yet.
+- Build and lint checks require the declared npm dependencies to be installed.
+
+## License
+
+MIT — see [LICENSE](LICENSE) for details.

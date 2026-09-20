@@ -3,6 +3,14 @@
 ## 📋 Project Overview
 **UFO (ULTIMATE FINANCIAL OPERATIONS)** is a futuristic financial dashboard application built with React, TypeScript, and Tailwind CSS. It provides KPI visualization, revenue forecasting with uncertainty bands, expense tracking, and scenario analysis capabilities.
 
+## Audit update — 20 September 2026
+
+The previously listed README and scenario-analysis gaps are closed in the
+current source: the README now documents setup and boundaries, and the sliders
+feed the forecast, expense, KPI, and confidence calculations. The canvas view
+also supports layout persistence and JSON import/export. A dependency-backed
+build was not run in this checkout because npm dependencies are not installed.
+
 ---
 
 ## ✅ Current Strengths
@@ -26,27 +34,18 @@
 
 ---
 
-## 🔴 Issues & Gaps
+## 🔴 Remaining Issues & Gaps
 
 ### Critical Issues
 
-1. **README is Minimal**
-   - Only contains title and description
-   - Missing setup instructions, features list, and architecture docs
-
-2. **No Backend/API Layer**
+1. **No Backend/API Layer**
    - All data is hardcoded in the frontend
    - No data persistence
    - No real financial data integration
 
-3. **What-If Analysis Not Functional**
-   - Sliders exist but don't update calculations
-   - No state management to track slider changes
-   - No actual scenario recalculation logic
-
-4. **Canvas View is Incomplete**
-   - Placeholder only, mentions react-grid-layout but not implemented
-   - Missing drag-and-drop widget functionality
+2. **Canvas layout is intentionally lightweight**
+   - It uses local layout state and JSON sharing rather than a grid library.
+   - Drag-and-drop and multi-user synchronization remain future work.
 
 ### Code Quality Issues
 
