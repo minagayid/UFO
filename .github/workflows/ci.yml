@@ -18,22 +18,32 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install dependencies and audit
-        run: |
-          npm ci
-          npm audit --audit-level=moderate
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run dependency audit
+        id: dependency-audit
+        run: npm audit --audit-level=moderate
+        continue-on-error: true
 
       - name: Check for sensitive data
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
           # Let the action select the correct base/head for push and pull_request events.
-          # Hard-coding the default branch and HEAD made main pushes compare a commit to itself.
+          # Explicit default-branch/HEAD inputs made pushes to main compare a commit to itself.
+
+      - name: Enforce dependency audit gate
+        if: steps.dependency-audit.outcome == 'failure'
+        run: |
+          echo "Dependency audit found vulnerabilities at or above the configured threshold."
+          exit 1
 
   build:
     name: Build Application
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         node-version: [22.x, 24.x]
     steps:
@@ -71,7 +81,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24.x'
+          node-version: '22.x'
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
@@ -98,7 +108,7 @@ jobs:
       - name: Use Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '24.x'
+          node-version: '22.x'
           cache: 'npm'
           cache-dependency-path: package-lock.json
 
@@ -133,9 +143,9 @@ jobs:
 
       - name: Check CONTRIBUTING guidelines
         run: |
-          if [ ! -f CONTRIBUTING.md ]; then
-            echo "Consider adding CONTRIBUTING.md"
-          fi
+        if [ ! -f CONTRIBUTING.md ]; then
+          echo "Consider adding CONTRIBUTING.md"
+        fi
 
       - name: Summary
         run: |
