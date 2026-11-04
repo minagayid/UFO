@@ -17,22 +17,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - name: Install dependencies
         run: npm ci
-
       - name: Run dependency audit
         id: dependency-audit
         run: npm audit --audit-level=moderate
         continue-on-error: true
-
       - name: Check for sensitive data
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
           # Let the action select the correct base/head for push and pull_request events.
           # Explicit default-branch/HEAD inputs made pushes to main compare a commit to itself.
-
       - name: Enforce dependency audit gate
         if: steps.dependency-audit.outcome == 'failure'
         run: |
@@ -48,23 +44,18 @@ jobs:
         node-version: [22.x, 24.x]
     steps:
       - uses: actions/checkout@v4
-
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v4
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
           cache-dependency-path: package-lock.json
-
       - name: Install dependencies
         run: npm ci
-
       - name: Run TypeScript check
         run: npx tsc --noEmit
-
       - name: Build
         run: npm run build
-
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
@@ -77,23 +68,18 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '22.x'
           cache: 'npm'
           cache-dependency-path: package-lock.json
-
       - name: Install dependencies
         run: npm ci
-
       - name: Check for console logs
         run: |
           if grep -r "console\\." src/ --include="*.tsx" --include="*.ts" | grep -v "// console\\." | grep -v "console\\.error"; then
             echo "Warning: console statements found in source code"
           fi
-
       - name: Check for TODO/FIXME comments
         run: |
           echo "=== TODOs in source code ==="
@@ -104,14 +90,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
-      - name: Use Node.js
-        uses: actions/setup-node@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: '22.x'
           cache: 'npm'
           cache-dependency-path: package-lock.json
-
       - name: Check outdated dependencies
         run: |
           npm ci
@@ -124,7 +107,6 @@ jobs:
     if: github.event_name == 'pull_request'
     steps:
       - uses: actions/checkout@v4
-
       - name: Check README
         run: |
           if [ ! -f README.md ] || [ ! -s README.md ]; then
@@ -134,19 +116,16 @@ jobs:
           if ! grep -q "Installation\\|Setup\\|Usage" README.md; then
             echo "README.md lacks key sections"
           fi
-
       - name: Check LICENSE
         run: |
           if [ ! -f LICENSE ]; then
             echo "No LICENSE file found"
           fi
-
       - name: Check CONTRIBUTING guidelines
         run: |
-        if [ ! -f CONTRIBUTING.md ]; then
-          echo "Consider adding CONTRIBUTING.md"
-        fi
-
+          if [ ! -f CONTRIBUTING.md ]; then
+            echo "Consider adding CONTRIBUTING.md"
+          fi
       - name: Summary
         run: |
           echo "Required CI gates passed."
