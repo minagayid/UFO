@@ -17,18 +17,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
       - name: Install dependencies
         run: npm ci
+
       - name: Run dependency audit
         id: dependency-audit
         run: npm audit --audit-level=moderate
         continue-on-error: true
+
       - name: Check for sensitive data
         uses: trufflesecurity/trufflehog@main
         with:
           path: ./
           # Let the action select the correct base/head for push and pull_request events.
-          # Explicit default-branch/HEAD inputs made pushes to main compare a commit to itself.
+          # Full history is required so the action can resolve the event's prior commit.
+
       - name: Enforce dependency audit gate
         if: steps.dependency-audit.outcome == 'failure'
         run: |
